@@ -60,7 +60,7 @@ const data = [
     const btnWrapper = document.createElement('div');
     btnWrapper.classList.add('btn-wrapper');
 
-    const btns = params.map(({classList, type, text}) => {
+    const btns = params.map(({ classList, type, text }) => {
       const button = document.createElement('button');
       button.type = type;
       button.textContent = text;
@@ -172,6 +172,7 @@ const data = [
       },
     ]);
     const table = createTable();
+
     const form = createForm();
 
     const footer = createFooter();
@@ -182,10 +183,14 @@ const data = [
 
     return {
       list: table.tbody,
+      logo,
+      btnAdd: buttonGroup.btns[0],
+      formOverlay: form.overlay,
+      form: form.form,
     };
   };
 
-  const createRow = ({name: firstName, surname, phone}) => {
+  const createRow = ({ name: firstName, surname, phone }) => {
     const tr = document.createElement('tr');
 
     const tdDel = document.createElement('td');
@@ -204,7 +209,7 @@ const data = [
     const phoneLink = document.createElement('a');
     phoneLink.href = `tel:${phone}`;
     phoneLink.textContent = phone;
-
+    tr.phoneLink = phoneLink;
     tdPhone.append(phoneLink);
 
     tr.append(tdDel, tdName, tdSurname, tdPhone);
@@ -215,16 +220,49 @@ const data = [
   const renderContacts = (elem, data) => {
     const allRow = data.map(createRow);
     elem.append(...allRow);
+    return allRow;
+  };
+
+  const hoverRow = (allRow, logo) => {
+    const text = logo.textContent;
+    allRow.forEach(contact => {
+      contact.addEventListener('mouseenter', () => {
+        logo.textContent = contact.phoneLink.textContent;
+      });
+      contact.addEventListener('mouseleave', () => {
+        logo.textContent = text;
+      });
+    });
   };
 
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
     const phoneBook = renderPhoneBook(app, title);
 
-    const {list} = phoneBook;
+    const { list, logo, btnAdd, formOverlay, form } = phoneBook;
+    const btnClose = document.querySelector('.close');
+    console.log(btnClose);
 
-    renderContacts(list, data);
     // Функционал
+
+    const allRow = renderContacts(list, data);
+    hoverRow(allRow, logo);
+
+    btnAdd.addEventListener('click', () => {
+      formOverlay.classList.add('is-visible');
+    });
+
+    form.addEventListener('click', event => {
+      event.stopPropagation();
+    });
+
+    formOverlay.addEventListener('click', () => {
+      formOverlay.classList.remove('is-visible');
+    });
+
+    btnClose.addEventListener('click', () => {
+      formOverlay.classList.remove('is-visible');
+    });
   };
 
   window.phoneBookInit = init;
