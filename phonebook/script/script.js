@@ -87,6 +87,7 @@ const data = [
     <th>Имя</th>
     <th>Фамилия</th>
     <th>Телефон</th>
+    <th></th>
     </tr>
     `);
 
@@ -207,12 +208,23 @@ const data = [
 
     const tdPhone = document.createElement('td');
     const phoneLink = document.createElement('a');
+
     phoneLink.href = `tel:${phone}`;
     phoneLink.textContent = phone;
     tr.phoneLink = phoneLink;
     tdPhone.append(phoneLink);
 
-    tr.append(tdDel, tdName, tdSurname, tdPhone);
+    const tdBtn = document.createElement('td');
+    const editBtn = createButtonsGroup([
+      {
+        classList: 'btn btn-primary',
+        type: 'button',
+        text: 'Редактировать',
+      },
+    ]);
+    tdBtn.append(editBtn.btns[0]);
+
+    tr.append(tdDel, tdName, tdSurname, tdPhone, tdBtn);
 
     return tr;
   };
