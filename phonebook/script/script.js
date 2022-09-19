@@ -24,9 +24,33 @@ const data = [
 ];
 
 {
-  const addContactData = (contact) => {
-    data.push(contact);
-    console.log(data);
+  const getStorage = () => {
+    // получает в виде аргумента ключ и
+    // по нему запрашивает данные из localStorage
+    // и возвращает их, если их нет, то возвращает пустой массив
+    const arr = localStorage.getItem('phonebook') ?
+      JSON.parse(localStorage.getItem('phonebook')) : [];
+    return arr;
+  };
+
+  const setStorage = (key, value) => {
+    // получает ключ и объект в виде аргументов и
+    // дописывает данные в localStorage.
+    // Для этого с помощью getStorage необходимо данные получить,
+    // дописать объект в массив и отправить после этого данные в localStorage
+    const obj = JSON.stringify(value);
+    localStorage.setItem(key, obj);
+  };
+  const removeStorage = (tel, newData) => {
+    // получает в виде аргумента номер телефона,
+    // и удаляет контакт из localStorage,
+    // с логикой необходимо разобраться самостоятельно!
+    for (let i = 0; i < newData.length; i++) {
+      if (tel === newData[i].phone) {
+        newData.splice(i, 1);
+      }
+    }
+    setStorage('phonebook', newData);
   };
 
   const createContainer = () => {
@@ -218,6 +242,7 @@ const data = [
     phoneLink.href = `tel:${phone}`;
     phoneLink.textContent = phone;
     tr.phoneLink = phoneLink;
+    // tr.id = phoneLink.textContent;
     tdPhone.append(phoneLink);
 
     tr.append(tdDel, tdName, tdSurname, tdPhone);
@@ -225,8 +250,14 @@ const data = [
     return tr;
   };
 
-  const renderContacts = (elem, data) => {
-    const allRow = data.map(createRow);
+  const renderContacts = (elem, data, newData) => {
+    let allRow = [];
+    if (newData !== []) {
+      allRow = newData.map(createRow);
+    } else {
+      allRow = data.map(createRow);
+    }
+    console.log(allRow);
     elem.append(...allRow);
     return allRow;
   };
@@ -266,7 +297,7 @@ const data = [
     };
   };
 
-  const deleteControl = (btnDel, list) => {
+  const deleteControl = (btnDel, list, newData) => {
     btnDel.addEventListener('click', () => {
       document.querySelectorAll('.delete').forEach(del => {
         del.classList.toggle('is-visible');
@@ -276,16 +307,25 @@ const data = [
     list.addEventListener('click', e => {
       const target = e.target;
       if (target.closest('.del-icon')) {
-        target.closest('.contact').remove();
+        const contact = target.closest('.contact');
+        const tel = contact.querySelector('a').textContent;
+        contact.remove();
+        removeStorage(tel, newData);
       }
     });
+  };
+
+  const addContactData = (contact, newData) => {
+    data.push(contact);
+    newData.push(contact);
+    setStorage('phonebook', newData);
   };
 
   const addContactPage = (contact, list) => {
     list.append(createRow(contact));
   };
 
-  const formControl = (form, list, closeModal) => {
+  const formControl = (form, list, closeModal, newData) => {
     form.addEventListener('submit', e => {
       e.preventDefault();
 
@@ -293,7 +333,7 @@ const data = [
       const newContact = Object.fromEntries(formData);
       console.log('newContact', newContact);
       addContactPage(newContact, list);
-      addContactData(newContact);
+      addContactData(newContact, newData);
       form.reset();
       closeModal();
     });
@@ -301,6 +341,7 @@ const data = [
 
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
+
 
     const {
       list,
@@ -310,17 +351,23 @@ const data = [
       formOverlay,
       form,
     } = renderPhoneBook(app, title);
-
     // Функционал
 
-    const allRow = renderContacts(list, data);
+    // надо функции из урока 8 перевести в переменные где-то здесь
+    const newData = getStorage();
+    // const delTel = 
+    console.log('newData: ', newData);
+
+    const allRow = renderContacts(list, data, newData);
 
     const { closeModal } = modalControl(btnAdd, formOverlay);
 
     hoverRow(allRow, logo);
-    deleteControl(btnDel, list);
-    formControl(form, list, closeModal);
+    deleteControl(btnDel, list, newData);
+    formControl(form, list, closeModal, newData);
   };
+
 
   window.phoneBookInit = init;
 }
+
