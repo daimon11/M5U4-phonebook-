@@ -242,7 +242,7 @@ const data = [
     phoneLink.href = `tel:${phone}`;
     phoneLink.textContent = phone;
     tr.phoneLink = phoneLink;
-    // tr.id = phoneLink.textContent;
+    tr.id = phoneLink.textContent;
     tdPhone.append(phoneLink);
 
     tr.append(tdDel, tdName, tdSurname, tdPhone);
@@ -308,7 +308,7 @@ const data = [
       const target = e.target;
       if (target.closest('.del-icon')) {
         const contact = target.closest('.contact');
-        const tel = contact.querySelector('a').textContent;
+        const tel = contact.id;
         contact.remove();
         removeStorage(tel, newData);
       }
@@ -331,7 +331,6 @@ const data = [
 
       const formData = new FormData(e.target);
       const newContact = Object.fromEntries(formData);
-      console.log('newContact', newContact);
       addContactPage(newContact, list);
       addContactData(newContact, newData);
       form.reset();
