@@ -1,56 +1,25 @@
 'use strict';
 
-const data = [
-  {
-    name: 'Иван',
-    surname: 'Петров',
-    phone: '+79514545454',
-  },
-  {
-    name: 'Игорь',
-    surname: 'Семёнов',
-    phone: '+79999999999',
-  },
-  {
-    name: 'Семён',
-    surname: 'Иванов',
-    phone: '+79800252525',
-  },
-  {
-    name: 'Мария',
-    surname: 'Попова',
-    phone: '+79876543210',
-  },
-];
-
 {
   const getStorage = () => {
-    // получает в виде аргумента ключ и
-    // по нему запрашивает данные из localStorage
-    // и возвращает их, если их нет, то возвращает пустой массив
     const arr = localStorage.getItem('phonebook') ?
       JSON.parse(localStorage.getItem('phonebook')) : [];
     return arr;
   };
 
   const setStorage = (key, value) => {
-    // получает ключ и объект в виде аргументов и
-    // дописывает данные в localStorage.
-    // Для этого с помощью getStorage необходимо данные получить,
-    // дописать объект в массив и отправить после этого данные в localStorage
     const obj = JSON.stringify(value);
     localStorage.setItem(key, obj);
   };
-  const removeStorage = (tel, newData) => {
-    // получает в виде аргумента номер телефона,
-    // и удаляет контакт из localStorage,
-    // с логикой необходимо разобраться самостоятельно!
-    for (let i = 0; i < newData.length; i++) {
-      if (tel === newData[i].phone) {
-        newData.splice(i, 1);
+
+  const removeStorage = (id, data) => {
+    id = +id;
+    for (let i = 0; i < data.length; i++) {
+      if (id === data[i].id) {
+        data.splice(i, 1);
       }
     }
-    setStorage('phonebook', newData);
+    setStorage('phonebook', data);
   };
 
   const createContainer = () => {
@@ -221,7 +190,7 @@ const data = [
     };
   };
 
-  const createRow = ({ name: firstName, surname, phone }) => {
+  const createRow = ({ name: firstName, surname, phone, id }) => {
     const tr = document.createElement('tr');
     tr.classList.add('contact');
 
@@ -242,7 +211,7 @@ const data = [
     phoneLink.href = `tel:${phone}`;
     phoneLink.textContent = phone;
     tr.phoneLink = phoneLink;
-    tr.id = phoneLink.textContent;
+    tr.id = id;
     tdPhone.append(phoneLink);
 
     tr.append(tdDel, tdName, tdSurname, tdPhone);
@@ -250,13 +219,8 @@ const data = [
     return tr;
   };
 
-  const renderContacts = (elem, data, newData) => {
-    let allRow = [];
-    if (newData !== []) {
-      allRow = newData.map(createRow);
-    } else {
-      allRow = data.map(createRow);
-    }
+  const renderContacts = (elem, data) => {
+    const allRow = data.map(createRow);
     console.log(allRow);
     elem.append(...allRow);
     return allRow;
@@ -297,7 +261,7 @@ const data = [
     };
   };
 
-  const deleteControl = (btnDel, list, newData) => {
+  const deleteControl = (btnDel, list, data) => {
     btnDel.addEventListener('click', () => {
       document.querySelectorAll('.delete').forEach(del => {
         del.classList.toggle('is-visible');
@@ -308,31 +272,39 @@ const data = [
       const target = e.target;
       if (target.closest('.del-icon')) {
         const contact = target.closest('.contact');
-        const tel = contact.id;
+        const id = contact.id;
+        console.log('id: ', id);
+        console.log('data: ', data);
         contact.remove();
-        removeStorage(tel, newData);
+        removeStorage(id, data);
       }
     });
   };
 
-  const addContactData = (contact, newData) => {
+  const addContactData = (contact, data) => {
     data.push(contact);
-    newData.push(contact);
-    setStorage('phonebook', newData);
+    setStorage('phonebook', data);
   };
 
   const addContactPage = (contact, list) => {
     list.append(createRow(contact));
   };
 
-  const formControl = (form, list, closeModal, newData) => {
+  const formControl = (form, list, closeModal, data) => {
     form.addEventListener('submit', e => {
       e.preventDefault();
 
       const formData = new FormData(e.target);
       const newContact = Object.fromEntries(formData);
+
+      const randomIntFromInterval = (min, max) => {
+        const num = Math.floor(Math.random() * (max - min + 1) + min);
+        return num;
+      };
+      newContact.id = randomIntFromInterval(100000, 200000);
+
       addContactPage(newContact, list);
-      addContactData(newContact, newData);
+      addContactData(newContact, data);
       form.reset();
       closeModal();
     });
@@ -340,7 +312,6 @@ const data = [
 
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
-
 
     const {
       list,
@@ -350,20 +321,19 @@ const data = [
       formOverlay,
       form,
     } = renderPhoneBook(app, title);
+
     // Функционал
 
-    // надо функции из урока 8 перевести в переменные где-то здесь
-    const newData = getStorage();
-    // const delTel = 
-    console.log('newData: ', newData);
+    const data = getStorage();
+    console.log('newData: ', data);
 
-    const allRow = renderContacts(list, data, newData);
+    const allRow = renderContacts(list, data);
 
     const { closeModal } = modalControl(btnAdd, formOverlay);
 
     hoverRow(allRow, logo);
-    deleteControl(btnDel, list, newData);
-    formControl(form, list, closeModal, newData);
+    deleteControl(btnDel, list, data);
+    formControl(form, list, closeModal, data);
   };
 
 
