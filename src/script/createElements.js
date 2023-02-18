@@ -1,3 +1,11 @@
+import image from '../img/icon.svg';
+
+export const createImageLogo = () => {
+  const img = document.createElement('img');
+  img.src = image;
+  return img;
+};
+
 export const createContainer = () => {
   const container = document.createElement('div');
   container.classList.add('container');
@@ -98,7 +106,7 @@ export const createForm = () => {
 
   const buttonGroup = createButtonsGroup([
     {
-      classList: 'btn btn-primary mr-3',
+      classList: 'btn btn-primary me-3',
       type: 'submit',
       text: 'Добавить',
     },

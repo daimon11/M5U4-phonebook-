@@ -110,6 +110,8 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-image: url("../img/del.svg");
+  border: none;
+  background-color: transparent;
 }
 
 .del-icon:hover,

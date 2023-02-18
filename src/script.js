@@ -1,6 +1,12 @@
-import modalWindow from './modules/modal.js';
-import render from './modules/render.js';
-import {getStorage} from './modules/serviceStorage.js';
+import modalWindow from './script/modal';
+import render from './script/render';
+import {getStorage} from './script/serviceStorage';
+
+import './index.html';
+
+import './css/normalize.min.css';
+import './css/bootstrap.min.css';
+import './css/style.css';
 
 const {renderPhoneBook, renderContacts} = render;
 
@@ -37,5 +43,6 @@ const {
   };
 
 
-  window.phoneBookInit = init;
+  // window.phoneBookInit = init;
+  init('#app', 'Масяня');
 }
