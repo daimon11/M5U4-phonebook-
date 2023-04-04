@@ -1,5 +1,5 @@
-import {createRow} from './createElements.js';
-import {setStorage, removeStorage} from './serviceStorage.js';
+import {createRow} from './createElements';
+import {setStorage, removeStorage} from './serviceStorage';
 
 const hoverRow = (allRow, logo) => {
   const text = logo.textContent;
@@ -69,6 +69,7 @@ const formControl = (form, list, closeModal, data) => {
 
     const formData = new FormData(e.target);
     const newContact = Object.fromEntries(formData);
+
     newContact.id = randomIntFromInterval(100000, 200000);
     addContactPage(newContact, list);
     data.push(newContact);

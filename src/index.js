@@ -1,6 +1,12 @@
-import modalWindow from './modules/modal.js';
-import render from './modules/render.js';
-import {getStorage} from './modules/serviceStorage.js';
+import modalWindow from './script/modal';
+import render from './script/render';
+import {getStorage} from './script/serviceStorage';
+
+// import './css/normalize.min.css';
+// import './css/bootstrap.min.css';
+import './scss/index.scss';
+
+console.log('что-то меняем');
 
 const {renderPhoneBook, renderContacts} = render;
 
@@ -23,8 +29,6 @@ const {
       form,
     } = renderPhoneBook(app, title);
 
-    // Функционал
-
     const data = getStorage();
 
     const allRow = renderContacts(list, data);
@@ -35,7 +39,6 @@ const {
     deleteControl(btnDel, list, data);
     formControl(form, list, closeModal, data);
   };
-
 
   window.phoneBookInit = init;
 }
