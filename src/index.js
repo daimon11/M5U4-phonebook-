@@ -40,5 +40,7 @@ const {
     formControl(form, list, closeModal, data);
   };
 
-  window.phoneBookInit = init;
+  document.addEventListener('DOMContentLoaded', () => {
+    init('#app', 'Дмитрий');
+  });
 }
